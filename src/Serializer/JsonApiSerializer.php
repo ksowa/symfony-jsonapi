@@ -128,7 +128,14 @@ class JsonApiSerializer extends \NilPortugues\Api\JsonApi\JsonApiSerializer
                 $pattern = \array_combine($matches[1], $matches[0]);
             }
 
-            return $baseUrl.\urldecode($router->generate($routeNameFromMappingFile, $pattern, true));
+            $route = urldecode($router->generate($routeNameFromMappingFile, $pattern, Router::NETWORK_PATH));
+
+            if (strpos($route, '//') === 0) {
+                $scheme = parse_url($baseUrl, PHP_URL_SCHEME);
+                $route = $scheme.':'.$route;
+            }
+
+            return $route;
         }
 
         return (string) $routeNameFromMappingFile;
